@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026马年 · 内部福利传送门</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@700&display=swap" rel="stylesheet">
+    <style>
+        /* --- 样式区 --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #8b0000 url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><text x="20" y="100" font-family="Arial" font-size="90" fill="rgba(255,215,0,0.05)">馬</text></svg>');
+            font-family: 'Noto Serif SC', serif; color: #333; min-height: 100vh;
+            display: flex; justify-content: center; align-items: center; overflow-x: hidden; padding: 20px;
+        }
+        /* 遮罩层 (拦截非迅雷) */
+        #mask-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; display: none; color: white; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        
+        .main-container { max-width: 800px; width: 100%; background: #fff; border-radius: 20px; border: 8px solid #daa520; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+        .banner { background: linear-gradient(90deg, #b22222, #8b0000); color: #ffd700; padding: 30px; text-align: center; }
+        .banner h1 { font-family: 'Ma Shan Zheng', cursive; font-size: 2.5rem; margin-bottom: 10px; }
+        
+        .content-box { padding: 30px; }
+        .input-area { background: #fff5f5; padding: 20px; border-radius: 15px; border: 2px dashed #daa520; text-align: center; }
+        .code-input { width: 80%; padding: 15px; font-size: 1.2rem; border: 2px solid #daa520; border-radius: 10px; text-align: center; letter-spacing: 2px; text-transform: uppercase; }
+        
+        .btn { display: block; width: 100%; padding: 15px; background: #b22222; color: #ffd700; font-size: 1.2rem; font-weight: bold; border: none; border-radius: 50px; cursor: pointer; margin-top: 20px; transition: 0.3s; }
+        .btn:hover { background: #d32f2f; transform: scale(1.02); }
+        
+        .result-area { display: none; text-align: center; animation: fadeIn 0.5s; }
+        .prize-card { font-size: 2rem; color: #d32f2f; font-weight: bold; margin: 20px 0; padding: 20px; background: #fffde7; border-radius: 10px; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <!-- 浏览器拦截层 -->
+    <div id="mask-layer">
+        <i class="fas fa-exclamation-circle" style="font-size:*
+
