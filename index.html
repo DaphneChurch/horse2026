@@ -7,37 +7,776 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@700&display=swap" rel="stylesheet">
     <style>
-        /* --- 样式区 --- */
+        /* === 基础样式 === */
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            background: #8b0000 url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><text x="20" y="100" font-family="Arial" font-size="90" fill="rgba(255,215,0,0.05)">馬</text></svg>');
-            font-family: 'Noto Serif SC', serif; color: #333; min-height: 100vh;
-            display: flex; justify-content: center; align-items: center; overflow-x: hidden; padding: 20px;
+            background: linear-gradient(135deg, #8b0000 0%, #c41e3a 50%, #8b0000 100%);
+            font-family: 'Noto Serif SC', serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
         }
-        /* 遮罩层 (拦截非迅雷) */
-        #mask-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; display: none; color: white; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-        
-        .main-container { max-width: 800px; width: 100%; background: #fff; border-radius: 20px; border: 8px solid #daa520; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
-        .banner { background: linear-gradient(90deg, #b22222, #8b0000); color: #ffd700; padding: 30px; text-align: center; }
-        .banner h1 { font-family: 'Ma Shan Zheng', cursive; font-size: 2.5rem; margin-bottom: 10px; }
-        
-        .content-box { padding: 30px; }
-        .input-area { background: #fff5f5; padding: 20px; border-radius: 15px; border: 2px dashed #daa520; text-align: center; }
-        .code-input { width: 80%; padding: 15px; font-size: 1.2rem; border: 2px solid #daa520; border-radius: 10px; text-align: center; letter-spacing: 2px; text-transform: uppercase; }
-        
-        .btn { display: block; width: 100%; padding: 15px; background: #b22222; color: #ffd700; font-size: 1.2rem; font-weight: bold; border: none; border-radius: 50px; cursor: pointer; margin-top: 20px; transition: 0.3s; }
-        .btn:hover { background: #d32f2f; transform: scale(1.02); }
-        
-        .result-area { display: none; text-align: center; animation: fadeIn 0.5s; }
-        .prize-card { font-size: 2rem; color: #d32f2f; font-weight: bold; margin: 20px 0; padding: 20px; background: #fffde7; border-radius: 10px; }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* === 飘落金币动画 === */
+        .falling-coins {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .coin {
+            position: absolute;
+            top: -50px;
+            font-size: 24px;
+            animation: fall linear infinite;
+            opacity: 0.8;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(720deg);
+            }
+        }
+
+        /* === 滚动跑马灯 === */
+        .marquee-container {
+            background: linear-gradient(90deg, #ffd700, #ffec8b, #ffd700);
+            padding: 10px 0;
+            overflow: hidden;
+            position: relative;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .marquee {
+            display: flex;
+            animation: marquee 20s linear infinite;
+            white-space: nowrap;
+        }
+
+        .marquee span {
+            color: #c41e3a;
+            font-weight: bold;
+            padding: 0 50px;
+            font-size: 14px;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* === 遮罩层 (拦截非迅雷) === */
+        #mask-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+        }
+
+        #mask-layer i {
+            font-size: 80px;
+            color: #ffd700;
+            margin-bottom: 30px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        #mask-layer h2 {
+            font-size: 28px;
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+
+        #mask-layer p {
+            font-size: 16px;
+            color: #ccc;
+            margin-bottom: 30px;
+        }
+
+        #mask-layer .download-btn {
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            color: #8b0000;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(255,215,0,0.4);
+        }
+
+        #mask-layer .download-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 30px rgba(255,215,0,0.6);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* === 主容器 === */
+        .main-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .main-container {
+            max-width: 500px;
+            width: 100%;
+            background: linear-gradient(145deg, #fff9e6, #fff);
+            border-radius: 20px;
+            border: 5px solid #ffd700;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(255,215,0,0.5), 0 20px 60px rgba(0,0,0,0.3);
+            animation: containerGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes containerGlow {
+            0% { box-shadow: 0 0 30px rgba(255,215,0,0.5), 0 20px 60px rgba(0,0,0,0.3); }
+            100% { box-shadow: 0 0 50px rgba(255,215,0,0.8), 0 20px 60px rgba(0,0,0,0.3); }
+        }
+
+        /* === 头部横幅 === */
+        .banner {
+            background: linear-gradient(135deg, #c41e3a, #8b0000);
+            padding: 25px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .banner::before {
+            content: "🐴";
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 40px;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        .banner::after {
+            content: "🐴";
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 40px;
+            animation: bounce 1s ease-in-out infinite 0.5s;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-60%) scale(1.1); }
+        }
+
+        .banner h1 {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 2.2rem;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: titleShine 2s ease-in-out infinite;
+        }
+
+        @keyframes titleShine {
+            0%, 100% { text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+            50% { text-shadow: 0 0 20px #ffd700, 2px 2px 4px rgba(0,0,0,0.3); }
+        }
+
+        .banner p {
+            color: #ffec8b;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        /* === 内容区 === */
+        .content-box {
+            padding: 30px;
+        }
+
+        /* === 页面切换 === */
+        .page { display: none; }
+        .page.active { display: block; animation: fadeInUp 0.5s ease; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* === 兑换码输入区 === */
+        .input-area {
+            background: linear-gradient(145deg, #fff5f5, #fff);
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px dashed #ffd700;
+            text-align: center;
+        }
+
+        .input-area h3 {
+            color: #c41e3a;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .input-area h3 i {
+            margin-right: 8px;
+            animation: sparkle 1s ease-in-out infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .code-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2rem;
+            border: 3px solid #ffd700;
+            border-radius: 10px;
+            text-align: center;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: all 0.3s;
+            background: #fff;
+        }
+
+        .code-input:focus {
+            outline: none;
+            border-color: #c41e3a;
+            box-shadow: 0 0 15px rgba(255,215,0,0.5);
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #c41e3a, #8b0000);
+            color: #ffd700;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(196,30,58,0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: rotate(45deg);
+            animation: btnShine 2s ease-in-out infinite;
+        }
+
+        @keyframes btnShine {
+            0% { left: -50%; }
+            100% { left: 150%; }
+        }
+
+        .btn:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 30px rgba(196,30,58,0.6);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .error-msg {
+            color: #c41e3a;
+            margin-top: 15px;
+            font-size: 14px;
+            display: none;
+        }
+
+        /* === 对联抽奖区 === */
+        .lottery-area h3 {
+            text-align: center;
+            color: #c41e3a;
+            margin-bottom: 25px;
+            font-size: 20px;
+        }
+
+        .couplet-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .couplet-card {
+            aspect-ratio: 1;
+            background: linear-gradient(145deg, #c41e3a, #8b0000);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            transform-style: preserve-3d;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            border: 3px solid #ffd700;
+        }
+
+        .couplet-card:hover {
+            transform: scale(1.05) rotateY(10deg);
+            box-shadow: 0 10px 30px rgba(255,215,0,0.5);
+        }
+
+        .couplet-card .front {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 3rem;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .couplet-card.selected {
+            animation: flipCard 0.8s ease forwards;
+        }
+
+        @keyframes flipCard {
+            0% { transform: rotateY(0); }
+            50% { transform: rotateY(90deg); }
+            100% { transform: rotateY(0); }
+        }
+
+        /* === 结果展示区 === */
+        .result-area {
+            text-align: center;
+        }
+
+        .result-area h3 {
+            color: #c41e3a;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .prize-card {
+            background: linear-gradient(145deg, #ffd700, #ffaa00);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(255,215,0,0.5);
+        }
+
+        .prize-card::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(transparent, rgba(255,255,255,0.3), transparent);
+            animation: rotate 3s linear infinite;
+        }
+
+        @keyframes rotate {
+            100% { transform: rotate(360deg); }
+        }
+
+        .prize-card .prize-text {
+            position: relative;
+            z-index: 1;
+            font-size: 2.5rem;
+            color: #8b0000;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+        }
+
+        .prize-card.thanks {
+            background: linear-gradient(145deg, #e0e0e0, #f5f5f5);
+        }
+
+        .prize-card.thanks .prize-text {
+            color: #666;
+            font-size: 1.8rem;
+        }
+
+        .result-tip {
+            color: #666;
+            font-size: 14px;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 10px;
+        }
+
+        /* === 烟花效果 === */
+        .fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+        }
+
+        .firework {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: explode 1s ease-out forwards;
+        }
+
+        @keyframes explode {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(20); opacity: 0; }
+        }
+
+        /* === 响应式 === */
+        @media (max-width: 480px) {
+            .banner h1 { font-size: 1.6rem; }
+            .banner::before, .banner::after { font-size: 25px; }
+            .couplet-card .front { font-size: 2rem; }
+            .prize-card .prize-text { font-size: 1.8rem; }
+        }
     </style>
 </head>
 <body>
 
+    <!-- 飘落金币 -->
+    <div class="falling-coins" id="fallingCoins"></div>
+
+    <!-- 烟花容器 -->
+    <div class="fireworks" id="fireworks"></div>
+
     <!-- 浏览器拦截层 -->
     <div id="mask-layer">
-        <i class="fas fa-exclamation-circle" style="font-size:*
+        <i class="fas fa-exclamation-triangle"></i>
+        <h2>推荐使用迅雷浏览器打开</h2>
+        <p>为了获得最佳体验，请使用迅雷浏览器访问本页面</p>
+        <a href="https://www.xunlei.com/" class="download-btn" target="_blank">
+            <i class="fas fa-download"></i> 下载迅雷浏览器
+        </a>
+    </div>
 
-
+    <!-- 滚动跑马灯 -->
+    <div class="marquee-container">
+        <div class="marquee">
+            <span>🎉 恭喜 138****8888 抽中 2000元现金红包！</span>
+            <span>🎊 恭喜 156****6666 抽中 小电驴一辆！</span>
+            <span>💰 恭喜 189****9999 抽中 500元现金红包！</span>
+            <span>🎁 恭喜 135****5555 抽中 2000元现金红包！</span>
+            <span>🏆 恭喜 177****7777 抽中 小电驴一辆！</span>
+            <span>🎉 恭喜 138****8888 抽中 2000元现金红包！</span>
+            <span>🎊 恭喜 156****6666 抽中 小电驴一辆！</span>
+            <span>💰 恭喜 189****9999 抽中 500元现金红包！</span>
+            <span>🎁 恭喜 135****5555 抽中 2000元现金红包！</span>
+            <span>🏆 恭喜 177****7777 抽中 小电驴一辆！</span>
+        </div>
+    </div>
+
+    <!-- 主容器 -->
+    <div class="main-wrapper">
+        <div class="main-container">
+            <div class="banner">
+                <h1>2026马年 · 内部福利传送门</h1>
+                <p>✨ 新春好礼 · 马上有福 ✨</p>
+            </div>
+
+            <div class="content-box">
+                <!-- 页面1：兑换码输入 -->
+                <div class="page active" id="page-code">
+                    <div class="input-area">
+                        <h3><i class="fas fa-gift"></i> 请输入您的专属兑换码</h3>
+                        <input type="text" class="code-input" id="codeInput" placeholder="请输入兑换码" maxlength="20">
+                        <button class="btn" onclick="verifyCode()">
+                            <i class="fas fa-check-circle"></i> 立即兑换
+                        </button>
+                        <p class="error-msg" id="errorMsg"></p>
+                    </div>
+                </div>
+
+                <!-- 页面2：选对联抽奖 -->
+                <div class="page" id="page-lottery">
+                    <div class="lottery-area">
+                        <h3>🎊 恭喜获得抽奖资格！<br>请选择一副对联揭晓奖品</h3>
+                        <div class="couplet-grid">
+                            <div class="couplet-card" onclick="selectCouplet(this)">
+                                <span class="front">福</span>
+                            </div>
+                            <div class="couplet-card" onclick="selectCouplet(this)">
+                                <span class="front">春</span>
+                            </div>
+                            <div class="couplet-card" onclick="selectCouplet(this)">
+                                <span class="front">财</span>
+                            </div>
+                            <div class="couplet-card" onclick="selectCouplet(this)">
+                                <span class="front">旺</span>
+                            </div>
+                            <div class="couplet-card" onclick="selectCouplet(this)">
+                                <span class="front">顺</span>
+                            </div>
+                            <div class="couplet-card" onclick="selectCouplet(this)">
+                                <span class="front">吉</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 页面3：结果展示 -->
+                <div class="page" id="page-result">
+                    <div class="result-area">
+                        <h3 id="resultTitle">🎉 恭喜您抽中 🎉</h3>
+                        <div class="prize-card" id="prizeCard">
+                            <div class="prize-text" id="prizeText"></div>
+                        </div>
+                        <div class="result-tip" id="resultTip">
+                            📱 请截图保存，联系管理员领取奖品
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // 🎯 配置区 - 在这里修改兑换码和概率
+        // ============================================
+
+        // 兑换码配置 - 分为三个概率区
+        const CODE_CONFIG = {
+            // 概率区A：高概率区（VIP用户）
+            // 2000元(30%) / 500元(25%) / 小电驴(35%) / 感谢参与(10%)
+            A: ['VIP001', 'VIP002'],
+            
+            // 概率区B：中概率区（普通员工）
+            // 2000元(10%) / 500元(15%) / 小电驴(20%) / 感谢参与(55%)
+            B: ['STAFF001', 'STAFF002'],
+            
+            // 概率区C：低概率区（普通用户）
+            // 2000元(2%) / 500元(3%) / 小电驴(5%) / 感谢参与(90%)
+            C: ['USER001', 'USER002']
+        };
+
+        // 概率配置（百分比）
+        const PROBABILITY_CONFIG = {
+            A: { prize2000: 30, prize500: 25, bike: 35, thanks: 10 },
+            B: { prize2000: 10, prize500: 15, bike: 20, thanks: 55 },
+            C: { prize2000: 2, prize500: 3, bike: 5, thanks: 90 }
+        };
+
+        // ============================================
+        // 🔧 功能代码区 - 一般不需要修改
+        // ============================================
+
+        let currentProbabilityZone = null;
+
+        // 检测浏览器
+        function checkBrowser() {
+            const ua = navigator.userAgent.toLowerCase();
+            // 检测是否为迅雷浏览器
+            const isThunder = ua.indexOf('thunder') > -1 || 
+                              ua.indexOf('xunlei') > -1 ||
+                              ua.indexOf('xl') > -1;
+            
+            // 如果不是迅雷浏览器，显示遮罩
+            if (!isThunder) {
+                document.getElementById('mask-layer').style.display = 'flex';
+            }
+        }
+
+        // 创建飘落金币
+        function createFallingCoins() {
+            const container = document.getElementById('fallingCoins');
+            const emojis = ['💰', '🧧', '✨', '🎁', '💎', '🏆'];
+            
+            for (let i = 0; i < 30; i++) {
+                const coin = document.createElement('div');
+                coin.className = 'coin';
+                coin.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                coin.style.left = Math.random() * 100 + '%';
+                coin.style.animationDuration = (3 + Math.random() * 4) + 's';
+                coin.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(coin);
+            }
+        }
+
+        // 验证兑换码
+        function verifyCode() {
+            const input = document.getElementById('codeInput');
+            const errorMsg = document.getElementById('errorMsg');
+            const code = input.value.trim().toUpperCase();
+
+            if (!code) {
+                showError('请输入兑换码');
+                return;
+            }
+
+            // 检查是否已使用
+            const usedCodes = JSON.parse(localStorage.getItem('usedCodes') || '[]');
+            if (usedCodes.includes(code)) {
+                showError('该兑换码已被使用');
+                return;
+            }
+
+            // 检查兑换码属于哪个概率区
+            let zone = null;
+            for (const [key, codes] of Object.entries(CODE_CONFIG)) {
+                if (codes.includes(code)) {
+                    zone = key;
+                    break;
+                }
+            }
+
+            if (!zone) {
+                showError('无效的兑换码，请检查后重试');
+                return;
+            }
+
+            // 标记为已使用
+            usedCodes.push(code);
+            localStorage.setItem('usedCodes', JSON.stringify(usedCodes));
+
+            // 保存当前概率区
+            currentProbabilityZone = zone;
+
+            // 切换到抽奖页面
+            showPage('page-lottery');
+        }
+
+        function showError(msg) {
+            const errorMsg = document.getElementById('errorMsg');
+            errorMsg.textContent = msg;
+            errorMsg.style.display = 'block';
+            setTimeout(() => {
+                errorMsg.style.display = 'none';
+            }, 3000);
+        }
+
+        // 选择对联
+        function selectCouplet(card) {
+            // 防止重复点击
+            if (card.classList.contains('selected')) return;
+            
+            // 禁用所有卡片
+            document.querySelectorAll('.couplet-card').forEach(c => {
+                c.style.pointerEvents = 'none';
+            });
+
+            card.classList.add('selected');
+
+            // 抽奖
+            setTimeout(() => {
+                const prize = drawPrize();
+                showResult(prize);
+            }, 800);
+        }
+
+        // 抽奖逻辑
+        function drawPrize() {
+            const prob = PROBABILITY_CONFIG[currentProbabilityZone];
+            const random = Math.random() * 100;
+
+            if (random < prob.prize2000) {
+                return { type: 'big', text: '💰 2000元现金红包', isThanks: false };
+            } else if (random < prob.prize2000 + prob.prize500) {
+                return { type: 'medium', text: '💵 500元现金红包', isThanks: false };
+            } else if (random < prob.prize2000 + prob.prize500 + prob.bike) {
+                return { type: 'special', text: '🛵 小电驴一辆', isThanks: false };
+            } else {
+                return { type: 'thanks', text: '🙏 感谢参与', isThanks: true };
+            }
+        }
+
+        // 显示结果
+        function showResult(prize) {
+            const resultTitle = document.getElementById('resultTitle');
+            const prizeCard = document.getElementById('prizeCard');
+            const prizeText = document.getElementById('prizeText');
+            const resultTip = document.getElementById('resultTip');
+
+            prizeText.textContent = prize.text;
+
+            if (prize.isThanks) {
+                resultTitle.textContent = '😊 很遗憾';
+                prizeCard.classList.add('thanks');
+                resultTip.innerHTML = '🍀 感谢您的参与，祝您马年大吉！';
+            } else {
+                resultTitle.textContent = '🎉 恭喜您抽中 🎉';
+                prizeCard.classList.remove('thanks');
+                resultTip.innerHTML = '📱 请截图保存，联系管理员领取奖品<br>客服微信：XXXXXXXX';
+                // 显示烟花
+                showFireworks();
+            }
+
+            showPage('page-result');
+        }
+
+        // 显示烟花
+        function showFireworks() {
+            const container = document.getElementById('fireworks');
+            container.style.display = 'block';
+            
+            const colors = ['#ff0000', '#ffd700', '#ff69b4', '#00ff00', '#00bfff', '#ff8c00'];
+            
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const firework = document.createElement('div');
+                    firework.className = 'firework';
+                    firework.style.left = Math.random() * 100 + '%';
+                    firework.style.top = Math.random() * 60 + 20 + '%';
+                    firework.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    container.appendChild(firework);
+                    
+                    setTimeout(() => firework.remove(), 1000);
+                }, i * 200);
+            }
+
+            setTimeout(() => {
+                container.style.display = 'none';
+            }, 5000);
+        }
+
+        // 切换页面
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        // 初始化
+        window.onload = function() {
+            checkBrowser();
+            createFallingCoins();
+        };
+    </script>
+
+</body>
+</html>
