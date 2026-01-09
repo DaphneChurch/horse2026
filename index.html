@@ -72,57 +72,85 @@
             100% { transform: translateX(-50%); }
         }
 
-        /* === 遮罩层 (拦截非迅雷) === */
-        #mask-layer {
+        /* === 引导页面 (手动确认) === */
+        #guide-layer {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.95);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
             z-index: 9999;
-            display: none;
+            display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
             color: white;
+            padding: 20px;
         }
 
-        #mask-layer i {
+        #guide-layer .guide-icon {
             font-size: 80px;
-            color: #ffd700;
             margin-bottom: 30px;
             animation: pulse 1.5s ease-in-out infinite;
         }
 
-        #mask-layer h2 {
-            font-size: 28px;
+        #guide-layer h2 {
+            font-size: 26px;
             margin-bottom: 15px;
             color: #ffd700;
+            font-family: 'Ma Shan Zheng', cursive;
         }
 
-        #mask-layer p {
-            font-size: 16px;
-            color: #ccc;
+        #guide-layer p {
+            font-size: 15px;
+            color: #aaa;
             margin-bottom: 30px;
+            line-height: 1.6;
         }
 
-        #mask-layer .download-btn {
+        #guide-layer .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        #guide-layer .btn-confirm {
             background: linear-gradient(135deg, #ffd700, #ffaa00);
             color: #8b0000;
-            padding: 15px 40px;
+            padding: 15px 30px;
             border-radius: 50px;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             text-decoration: none;
             transition: all 0.3s;
             box-shadow: 0 5px 20px rgba(255,215,0,0.4);
+            border: none;
+            cursor: pointer;
         }
 
-        #mask-layer .download-btn:hover {
+        #guide-layer .btn-confirm:hover {
             transform: scale(1.05);
             box-shadow: 0 8px 30px rgba(255,215,0,0.6);
+        }
+
+        #guide-layer .btn-download {
+            background: transparent;
+            color: #ffd700;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: 2px solid #ffd700;
+        }
+
+        #guide-layer .btn-download:hover {
+            background: rgba(255,215,0,0.1);
         }
 
         @keyframes pulse {
@@ -465,6 +493,7 @@
             .banner::before, .banner::after { font-size: 25px; }
             .couplet-card .front { font-size: 2rem; }
             .prize-card .prize-text { font-size: 1.8rem; }
+            #guide-layer h2 { font-size: 22px; }
         }
     </style>
 </head>
@@ -476,14 +505,19 @@
     <!-- 烟花容器 -->
     <div class="fireworks" id="fireworks"></div>
 
-    <!-- 浏览器拦截层 -->
-    <div id="mask-layer">
-        <i class="fas fa-exclamation-triangle"></i>
-        <h2>推荐使用迅雷浏览器打开</h2>
-        <p>为了获得最佳体验，请使用迅雷浏览器访问本页面</p>
-        <a href="https://www.xunlei.com/" class="download-btn" target="_blank">
-            <i class="fas fa-download"></i> 下载迅雷浏览器
-        </a>
+    <!-- 引导页面 (手动确认) -->
+    <div id="guide-layer">
+        <div class="guide-icon">🐴</div>
+        <h2>2026马年 · 内部福利传送门</h2>
+        <p>为了获得最佳体验<br>推荐使用 <strong style="color:#ffd700;">迅雷浏览器</strong> 访问本页面</p>
+        <div class="btn-group">
+            <button class="btn-confirm" onclick="enterLottery()">
+                <i class="fas fa-check-circle"></i> 我已使用迅雷浏览器
+            </button>
+            <a href="https://x.xunlei.com/" class="btn-download" target="_blank">
+                <i class="fas fa-download"></i> 下载迅雷浏览器
+            </a>
+        </div>
     </div>
 
     <!-- 滚动跑马灯 -->
@@ -599,18 +633,9 @@
 
         let currentProbabilityZone = null;
 
-        // 检测浏览器
-        function checkBrowser() {
-            const ua = navigator.userAgent.toLowerCase();
-            // 检测是否为迅雷浏览器
-            const isThunder = ua.indexOf('thunder') > -1 || 
-                              ua.indexOf('xunlei') > -1 ||
-                              ua.indexOf('xl') > -1;
-            
-            // 如果不是迅雷浏览器，显示遮罩
-            if (!isThunder) {
-                document.getElementById('mask-layer').style.display = 'flex';
-            }
+        // 进入抽奖（点击确认按钮后）
+        function enterLottery() {
+            document.getElementById('guide-layer').style.display = 'none';
         }
 
         // 创建飘落金币
@@ -773,7 +798,6 @@
 
         // 初始化
         window.onload = function() {
-            checkBrowser();
             createFallingCoins();
         };
     </script>
